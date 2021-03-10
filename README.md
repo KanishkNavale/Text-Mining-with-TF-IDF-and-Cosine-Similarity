@@ -18,15 +18,12 @@ A simple python repository for developing perceptron based text mining involving
     |nachgereicht      |42.9979|
     |sensation         |40.7419|
 
-    Please refer the [results.csv](outcomes/results.csv) for the complete term weights.
+    Please check the [results.csv](outcomes/results.csv) for the complete term weights.
 
 ## Dependencies
 Install dependencies using:
 ```bash
 pip3 install -r requirements.txt 
 ```
-## Challenge
-* Achieve the goal position with minimum episode steps
-
 ## Contact
 * email: navalekanishk@gmail.com
