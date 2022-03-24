@@ -55,9 +55,9 @@ def encode_labels(labels: List[str]) -> List[int]:
 
     for label in tqdm(labels, desc="Encoding Labels", total=len(labels)):
         if label == 'gut':
-            encoded_labels.append(1.0)
+            encoded_labels.append(1)
         else:
-            encoded_labels.append(0.0)
+            encoded_labels.append(0)
 
     return encoded_labels
 
@@ -162,7 +162,7 @@ def optimize(features: csr_matrix,
     weights = torch.tensor(weights, dtype=torch.float32, device=device, requires_grad=True)
 
     if penalize:
-        optimizer = torch.optim.Adam([weights], lr=learning_rate, weight_decay=1e-3)
+        optimizer = torch.optim.Adam([weights], lr=learning_rate, weight_decay=1e-6)
     else:
         optimizer = torch.optim.Adam([weights], lr=learning_rate)
 
@@ -182,7 +182,7 @@ def optimize(features: csr_matrix,
     return weights.squeeze(dim=-1).detach().cpu().numpy()
 
 
-def predict_labels(features: csr_matrix, weights: np.array) -> np.array:
+def predict_labels(features: csr_matrix, weights: np.ndarray) -> np.ndarray:
     """Compute predictions for given data and weights.
 
     Args:
@@ -210,7 +210,7 @@ def compute_accuracy(prediction: np.array, groundtruth: np.array) -> float:
     return len(np.where(prediction == groundtruth)[0]) / len(groundtruth)
 
 
-def plot_and_save_confusion_matrix(prediction: np.array, groundtruth: np.array, title: str = '') -> None:
+def plot_and_save_confusion_matrix(prediction: np.ndarray, groundtruth: np.ndarray, title: str = '') -> None:
     """Plots and saves the confusion matrix
 
     Args:
@@ -219,6 +219,8 @@ def plot_and_save_confusion_matrix(prediction: np.array, groundtruth: np.array, 
         title (str, optional): Title for the plot and filename. Defaults to ''.
     """
     matrix = np.matrix(confusion_matrix(groundtruth, prediction))
+
+    plt.figure()
 
     fig, ax = plt.subplots(1, 1)
 
@@ -237,6 +239,43 @@ def plot_and_save_confusion_matrix(prediction: np.array, groundtruth: np.array, 
     fig.savefig(os.path.join('torch_implementation/data', title + '.png'))
 
 
+def plot_and_save_weight_histogram(weights: np.ndarray, title: str = '') -> None:
+    """Plots and saves weight hsitogram
+
+    Args:
+        weights (np.array): weights
+        title (str, optional): Title for the plot and filename. Defaults to ''.
+    """
+    plt.figure()
+    plt.hist(np.ravel(weights), bins="auto")
+    plt.grid(True)
+    plt.title(title)
+    plt.savefig(os.path.join('torch_implementation/data', title + '.png'))
+
+
+def save_terms_with_their_weights(weights: np.ndarray, dictionary: np.ndarray, title: str = '') -> None:
+    """Saves Terms with it's corresponding weights.
+
+    Args:
+        weights (np.ndarray): weights
+        dictionary (np.ndarray): list of unique tokens
+        title (str, optional): filename. Defaults to ''.
+    """
+
+    weights = np.ravel(weights)
+    ranks = weights.argsort()[::-1]
+
+    term: List[str] = []
+    weight: List[float] = []
+
+    for index in ranks:
+        term.append(dictionary[index])
+        weight.append(np.around(weights[index], 4))
+
+    df = pd.DataFrame(list(zip(*[term, weight])), columns=['tokens', 'weight'])
+    df.to_csv(os.path.join('torch_implementation/data', title + '.csv'), index=False)
+
+
 if __name__ == "__main__":
 
     # Read dataset from the .csv file for Training the Perceptron
@@ -247,7 +286,6 @@ if __name__ == "__main__":
     texts = list(df.iloc[:, 3])
 
     texts, labels = delete_nan(texts, labels)
-
     encoded_labels = encode_labels(labels)
     tokanized_texts = generate_normalized_tokens_from_text(texts)
     dictionary = generate_list_of_unique_tokens(tokanized_texts)
@@ -258,7 +296,6 @@ if __name__ == "__main__":
     val_features = convert_list_of_tokens_to_vectors(val_texts, dictionary)
     val_labels = np.array(val_labels, dtype=np.float64)
 
-    # Compute optimized weights and predict labels
     optimized_weights = optimize(train_features, train_labels, epochs=20000)
     predicted_labels = predict_labels(val_features, optimized_weights)
 
@@ -267,9 +304,7 @@ if __name__ == "__main__":
 
     data = {
         "Non Penalized Accuracy": compute_accuracy(predicted_labels, val_labels),
-        "Penalized Accuracy": compute_accuracy(regularized_labels, val_labels),
-        "Non Penalized Weights": optimized_weights.tolist(),
-        "Penalized Weights": regularized_weights.tolist()
+        "Penalized Accuracy": compute_accuracy(regularized_labels, val_labels)
     }
 
     # Dump .json and other data
@@ -278,3 +313,9 @@ if __name__ == "__main__":
 
     plot_and_save_confusion_matrix(predicted_labels, val_labels, "Non Penalized Prediction")
     plot_and_save_confusion_matrix(regularized_labels, val_labels, "Penalized Prediction")
+
+    plot_and_save_weight_histogram(optimized_weights, "Non Penalized Weights")
+    plot_and_save_weight_histogram(regularized_weights, "Penalized Weights")
+
+    save_terms_with_their_weights(optimized_weights, dictionary, "Non Penalized Terms")
+    save_terms_with_their_weights(regularized_weights, dictionary, "Penalized Terms")
