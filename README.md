@@ -32,7 +32,7 @@ New Implementation: Added PyTorch based optimization handling buggy loading of s
 
     Top 5 weighted terms,
 
-    |Terms|Weights|Terms - L2|Weights - L2 Regularizded|
+    |Terms|Weights|Terms: L2|Weights: L2|
     |:--:|:--:|:--:|:--:|
     |erfolgreichen|20.5452|cool|8.8814|
     |anmeldungen|20.0064|geil|8.0933|
