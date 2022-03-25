@@ -1,29 +1,53 @@
 # Text Mining with TF-IDF & Cosine Similarity
+
 A simple python repository for developing perceptron based text mining involving dataset linguistics preprocessing for text classification and extracting similar text for a given query.
 
-## Outcomes,
-1. Perceptron training Confusion Matrix,
-<p align="left"><img src="outcomes/Confusion Matrix.png" width="350">
+New Implementation: Added PyTorch based optimization handling buggy loading of sparse 'csr_matrix' to cuda tensor.
 
-2. Perceptron training with L2-Regularization Confusion Matrix,
-<p align="left"><img src="outcomes/Confusion Matrix with L2R.png" width="350">
+## Outcomes
 
-3. Top-5 'terms' having the most weights/ importance,
+1. Numpy implementation,
 
-    |term              |weight |
-    |------------------|-------|
-    |sträuchern        |50.0088|
-    |addon             |45.3869|
-    |runtergestuft     |44.283 |
-    |nachgereicht      |42.9979|
-    |sensation         |40.7419|
+    |Vanilla Optimization|Optimization with L2-Regularization|
+    |:--:|:--:|
+    |<p align="left"><img src="outcomes/Confusion Matrix.png" width="350">|<p align="left"><img src="outcomes/Confusion Matrix with L2R.png" width="350">|
 
-    Please check the [results.csv](outcomes/results.csv) for the complete term weights.
+    Top 5 weighted terms,
+
+    |Terms|Weights|
+    |:--:|:--:|
+    |sträuchern|50.0088|
+    |addon|45.3869|
+    |runtergestuft|44.283 |
+    |nachgereicht|42.9979|
+    |sensation|40.7419|
+
+2. PyTorch implementation,
+
+    |Vanilla Optimization|Optimization with L2-Regularization|
+    |:--:|:--:|
+    |<p align="left"><img src="torch_implementation/data/Non Penalized Prediction.png" width="350">|<p align="left"><img src="torch_implementation/data/Penalized Prediction.png" width="350">|
+
+    Top 5 weighted terms,
+
+    |Terms|Weights|Terms - L2|Weights - L2 Regularizded|
+    |:--:|:--:|:--:|:--:|
+    |erfolgreichen|20.5452|cool|8.8814|
+    |anmeldungen|20.0064|geil|8.0933|
+    |angemessene|19.658|super|6.7332|
+    |eonfach|19.5906|top|5.4004|
+    |verarbeitung|19.5136|gut|4.8924|
+
 
 ## Dependencies
+
 Install dependencies using:
+
 ```bash
 pip3 install -r requirements.txt 
 ```
+
 ## Contact
-* email: navalekanishk@gmail.com
+
+* Email: navalekanishk@gmail.com
+* Website: https://kanishknavale.github.io/
