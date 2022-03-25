@@ -14,7 +14,7 @@ New Implementation: Added PyTorch based optimization handling buggy loading of s
 
     Top 5 weighted terms,
 
-    |Terms|Weights|Terms - L2|Weights - L2 Regularizded|
+    |Terms|Weights|Terms: L2|Weights: L2|
     |:--:|:--:|:--:|:--:|
     |langeweile|7.094|top|5.8911|
     |geilo|7.0535|langeweile|5.8396|
